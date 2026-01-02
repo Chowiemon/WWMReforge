@@ -1283,7 +1283,7 @@
                 
                 <div class="btn-group">
                     <button class="btn btn-primary" id="reforge-btn">
-                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础16.7USD)</span>
+                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础3.67USD)</span>
                     </button>
                     <button class="btn btn-warning" id="custom-btn">
                         <i class="fas fa-cogs"></i> 自定义设置
@@ -2525,13 +2525,13 @@ function saveCurrentScheme() {
         function updateReforgeButtonText(lockedCount) {
             let costText = "";
             if (lockedCount === 0) {
-                costText = "(基础16.7USD)";
+                costText = "(基础3.67USD)";
             } else if (lockedCount === 1) {
-                costText = "(基础33.4USD)";
+                costText = "(基础7.3USD)";
             } else if (lockedCount === 2) {
-                costText = "(基础83.5USD)";
+                costText = "(基础18.3USD)";
             } else if (lockedCount >= 3) {
-                costText = "(基础167.0USD)";
+                costText = "(基础36.67USD)";
             }
             
             document.getElementById('reforge-cost-text').textContent = costText;
@@ -2548,10 +2548,10 @@ function saveCurrentScheme() {
                 }
             }
             
-            let cost = 16.7;
-            if (lockedCount === 1) cost = 33.4;
-            else if (lockedCount === 2) cost = 83.5;
-            else if (lockedCount >= 3) cost = 167.0;
+            let cost = 3.67;
+            if (lockedCount === 1) cost = 7.3;
+            else if (lockedCount === 2) cost = 18.3;
+            else if (lockedCount >= 3) cost = 36.67;
             
             weaponState.totalCost += cost;
             weaponState.reforgeCount++;
