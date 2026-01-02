@@ -1,0 +1,3175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>藏音武器计算器1.3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 所有CSS样式保持不变 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3949ab;
+        }
+        
+        h1 {
+            color: #6ab7ff;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(106, 183, 255, 0.5);
+        }
+        
+        .subtitle {
+            color: #90caf9;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .author-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #a5d6a7;
+        }
+        
+        .author-link {
+            color: #a5d6a7;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .author-link:hover {
+            color: #6ab7ff;
+            text-decoration: underline;
+        }
+        
+        .weapon-display {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .weapon-display::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .weapon-display::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .weapon-display::-webkit-scrollbar-thumb {
+            background: #3949ab;
+            border-radius: 3px;
+        }
+        
+        .hole {
+            min-width: 140px;
+            width: 140px;
+            height: 200px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, box-shadow 0.3s;
+            padding-top: 8px;
+            flex-shrink: 0;
+        }
+        
+        .hole:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.7);
+        }
+        
+        .hole-number {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .hole-5 .hole-number {
+            background: rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+        
+        .hole-status {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .blue {
+            background: linear-gradient(135deg, #1e88e5 0%, #0d47a1 100%);
+            border: 2px solid #29b6f6;
+        }
+        
+        .purple {
+            background: linear-gradient(135deg, #8e24aa 0%, #4a148c 100%);
+            border: 2px solid #ce93d8;
+        }
+        
+        .gold {
+            background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+            border: 2px solid #ffd54f;
+        }
+        
+        .inactive {
+            background: linear-gradient(135deg, #424242 0%, #212121 100%);
+            border: 2px solid #757575;
+            color: #9e9e9e;
+        }
+        
+        .quality-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin: 8px 0 5px 0;
+            text-align: center;
+        }
+        
+        .attribute-label {
+            font-size: 0.9rem;
+            margin: 5px 0;
+            text-align: center;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+        
+        .blue-text {
+            color: #29b6f6;
+        }
+        
+        .purple-text {
+            color: #ce93d8;
+        }
+        
+        .gold-text {
+            color: #ffd54f;
+        }
+        
+        .inactive-text {
+            color: #9e9e9e;
+        }
+        
+        .lock-control {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .lock-checkbox {
+            margin-right: 5px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        
+        .lock-checkbox:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .lock-checkbox.disabled-by-lock3 {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .progress-container {
+            width: 90%;
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+        
+        .progress-text {
+            font-size: 0.75rem;
+            margin-top: 5px;
+            color: #ccc;
+        }
+        
+        .guarantee-counter {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            color: #ff9800;
+            font-weight: bold;
+            text-align: center;
+            padding: 0 5px;
+        }
+        
+        .control-panel {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-title {
+            color: #6ab7ff;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #3949ab;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2196f3 0%, #0d47a1 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.5);
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #9c27b0 0%, #6a1b9a 100%);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%);
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%);
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.5);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%);
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #ffb74d 0%, #ff7043 100%);
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+        }
+        
+        .cost-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .cost-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .cost-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        .cost-item-title {
+            font-size: 0.85rem;
+            color: #bdbdbd;
+            margin-bottom: 5px;
+        }
+        
+        .cost-item-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .total-cost-value {
+            color: #4caf50;
+        }
+        
+        .value-cost-value {
+            color: #ff9800;
+        }
+        
+        .profit-cost-value {
+            color: #2196f3;
+        }
+        
+        .profit-negative {
+            color: #f44336 !important;
+        }
+        
+        .total-cost {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #4caf50;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .cost-breakdown {
+            font-size: 0.95rem;
+            color: #bdbdbd;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .cost-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+        
+        .info-panel {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info-title {
+            color: #6ab7ff;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+        
+        .rules {
+            list-style-type: none;
+            padding-left: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .rules::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .rules::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .rules::-webkit-scrollbar-thumb {
+            background: #3949ab;
+            border-radius: 3px;
+        }
+        
+        .rules li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            line-height: 1.4;
+            font-size: 0.85rem;
+        }
+        
+        .rules li:before {
+            content: "•";
+            color: #6ab7ff;
+            font-size: 1.3rem;
+            position: absolute;
+            left: 0;
+            top: -3px;
+        }
+        
+        .history-panel {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .history-title {
+            color: #6ab7ff;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .history-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .history-list {
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .history-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .history-list::-webkit-scrollbar-thumb {
+            background: #3949ab;
+            border-radius: 3px;
+        }
+        
+        .history-item {
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+            font-size: 0.85rem;
+        }
+        
+        .gold-event {
+            border-left-color: #ffd700;
+        }
+        
+        .activate-event {
+            border-left-color: #4caf50;
+        }
+        
+        .info-event {
+            border-left-color: #2196f3;
+        }
+        
+        .warning-event {
+            border-left-color: #ff9800;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #3949ab;
+            color: #90a4ae;
+            font-size: 0.8rem;
+        }
+        
+        .probability-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+            font-size: 0.85rem;
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .probability-info::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .probability-info::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .probability-info::-webkit-scrollbar-thumb {
+            background: #3949ab;
+            border-radius: 3px;
+        }
+        
+        .action-note {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #ff9800;
+            font-size: 0.85rem;
+        }
+        
+        .gold-warning {
+            color: #ffd54f;
+            font-weight: bold;
+        }
+        
+        .immediate-reset-note {
+            color: #ff9800;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        /* 模态对话框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            padding: 15px;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            border: 2px solid #3949ab;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            color: #6ab7ff;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-content {
+            margin-bottom: 20px;
+            line-height: 1.5;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 5px;
+        }
+        
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #3949ab;
+            border-radius: 3px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: auto;
+        }
+        
+        /* 金色确认对话框按钮居中对齐 */
+        #gold-confirm-modal .modal-buttons {
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+        }
+        
+        .modal-btn-confirm:hover {
+            background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%);
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+        
+        .modal-btn-close {
+            background: linear-gradient(135deg, #757575 0%, #424242 100%);
+            color: white;
+        }
+        
+        .modal-btn-close:hover {
+            background: linear-gradient(135deg, #9e9e9e 0%, #616161 100%);
+            box-shadow: 0 0 10px rgba(117, 117, 117, 0.5);
+        }
+        
+        .modal-btn-save {
+            background: linear-gradient(135deg, #ff9800 0%, #e65100 100%);
+            color: white;
+        }
+        
+        .modal-btn-save:hover {
+            background: linear-gradient(135deg, #ffb74d 0%, #ff7043 100%);
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.5);
+        }
+       
+#temp-save-btn {
+    background: linear-gradient(135deg, #2196f3 0%, #0d47a1 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+#temp-save-btn:hover {
+    background: linear-gradient(135deg, #42a5f5 0%, #1565c0 100%);
+    box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+}
+
+#temp-save-btn:active {
+    transform: scale(0.98);
+}
+ 
+        .attribute-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .attribute-item {
+            padding: 6px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        
+        .blue-attribute {
+            border-left: 3px solid #29b6f6;
+        }
+        
+        .purple-attribute {
+            border-left: 3px solid #ce93d8;
+        }
+        
+        .gold-attribute {
+            border-left: 3px solid #ffd54f;
+        }
+        
+        .attribute-section {
+            margin-bottom: 15px;
+        }
+        
+        .attribute-section h4 {
+            color: #6ab7ff;
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+        
+        /* 方案管理样式 - 紧凑版 */
+        .scheme-panel {
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .scheme-title {
+            color: #6ab7ff;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .scheme-list {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 15px;
+            padding-bottom: 10px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .scheme-list::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .scheme-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .scheme-list::-webkit-scrollbar-thumb {
+            background: #3949ab;
+            border-radius: 3px;
+        }
+        
+        .scheme-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            position: relative;
+            min-width: 280px;
+            flex-shrink: 0;
+        }
+        
+        .scheme-item.empty {
+            border-left: 4px solid #757575;
+            text-align: center;
+            color: #9e9e9e;
+            padding: 20px;
+            width: 100%;
+            min-width: auto;
+        }
+        
+        .scheme-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .scheme-name {
+            font-weight: bold;
+            color: #ffd54f;
+            font-size: 1.1rem;
+        }
+        
+        .scheme-time {
+            font-size: 0.8rem;
+            color: #bdbdbd;
+        }
+        
+        .scheme-holes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .scheme-hole {
+            width: 70px;
+            height: 90px;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .scheme-hole.blue {
+            background: rgba(30, 136, 229, 0.2);
+            border: 1px solid #29b6f6;
+        }
+        
+        .scheme-hole.purple {
+            background: rgba(142, 36, 170, 0.2);
+            border: 1px solid #ce93d8;
+        }
+        
+        .scheme-hole.gold {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid #ffd54f;
+        }
+        
+        .scheme-hole.inactive {
+            background: rgba(66, 66, 66, 0.2);
+            border: 1px solid #757575;
+        }
+        
+        .scheme-hole-number {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .scheme-hole-quality {
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+        }
+        
+        .scheme-hole-attribute {
+            font-size: 0.65rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+        
+        .scheme-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        
+        .scheme-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .scheme-btn-apply {
+            background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+            color: white;
+        }
+        
+        .scheme-btn-apply:hover {
+            background: linear-gradient(135deg, #66bb6a 0%, #388e3c 100%);
+        }
+        
+        .scheme-btn-delete {
+            background: linear-gradient(135deg, #f44336 0%, #c62828 100%);
+            color: white;
+        }
+        
+        .scheme-btn-delete:hover {
+            background: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%);
+        }
+        
+        .scheme-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 自定义设置对话框样式 */
+        .custom-modal {
+            max-width: 700px;
+        }
+        
+        .custom-hole-setting {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .custom-hole-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .custom-hole-title {
+            font-weight: bold;
+            color: #ffd54f;
+            font-size: 1.1rem;
+        }
+        
+        .custom-hole-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .custom-control-group {
+            margin-bottom: 8px;
+        }
+        
+        .custom-control-label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            color: #90caf9;
+        }
+        
+        .custom-select, .custom-input, .custom-checkbox {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #3949ab;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+        
+        .custom-select:focus, .custom-input:focus {
+            outline: none;
+            border-color: #6ab7ff;
+        }
+        
+        .custom-checkbox {
+            width: auto;
+            margin-right: 8px;
+        }
+        
+        .custom-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .custom-input[type="range"] {
+            padding: 0;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            -webkit-appearance: none;
+        }
+        
+        .custom-input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ff9800;
+            cursor: pointer;
+        }
+        
+        .custom-input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ff9800;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .custom-value-display {
+            font-size: 0.85rem;
+            color: #ff9800;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .custom-note {
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 15px;
+            border-left: 3px solid #ff9800;
+            font-size: 0.85rem;
+        }
+        
+        /* 手机端优化 */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .hole {
+                min-width: 120px;
+                width: 120px;
+                height: 180px;
+            }
+            
+            .quality-label {
+                font-size: 1rem;
+            }
+            
+            .attribute-label {
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                min-width: 100px;
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .total-cost {
+                font-size: 1.4rem;
+            }
+            
+            .control-title {
+                font-size: 1.2rem;
+            }
+            
+            .info-title {
+                font-size: 1.1rem;
+            }
+            
+            .history-title {
+                font-size: 1.1rem;
+            }
+            
+            .modal-header {
+                font-size: 1.2rem;
+            }
+            
+            .modal-content {
+                font-size: 0.9rem;
+            }
+            
+            .cost-summary {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .cost-item-value {
+                font-size: 1.1rem;
+            }
+            
+            .attribute-item {
+                font-size: 0.8rem;
+                padding: 5px;
+            }
+            
+            .scheme-item {
+                min-width: 250px;
+            }
+            
+            .scheme-hole {
+                width: 60px;
+                height: 80px;
+            }
+            
+            .custom-modal {
+                max-width: 95%;
+            }
+            
+            .custom-hole-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .hole {
+                min-width: 110px;
+                width: 110px;
+                height: 170px;
+            }
+            
+            .quality-label {
+                font-size: 0.95rem;
+            }
+            
+            .attribute-label {
+                font-size: 0.8rem;
+            }
+            
+            .btn {
+                min-width: 90px;
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            
+            .total-cost {
+                font-size: 1.3rem;
+            }
+            
+            .scheme-item {
+                min-width: 220px;
+            }
+            
+            .scheme-hole {
+                width: 55px;
+                height: 75px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-calculator"></i> 藏音武器计算器 1.3</h1>
+            <div class="subtitle">燕云藏音武器皮肤重铸工具</div>
+            <div class="author-info">
+                <span><i class="fas fa-user"></i> 作者：<a href="https://space.bilibili.com/5052038" target="_blank" class="author-link">哔站-琅劳斯</a></span>
+                <span><i class="fas fa-calendar-alt"></i> 版本日期：v1.3_20251220</span>
+            </div>
+        </header>
+        
+        <main>
+            <div class="weapon-display">
+                <!-- 孔位1 -->
+                <div class="hole blue" id="hole-1">
+                    <div class="hole-number">1</div>
+                    <div class="quality-label blue-text">蓝色</div>
+                    <div class="attribute-label blue-text" id="attribute-1">蓝·套装1</div>
+                    <div class="hole-status">已激活</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar-1" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text-1">已激活</div>
+                    <div class="guarantee-counter" id="guarantee-counter-1">金色保底: 0/90</div>
+                    <div class="lock-control">
+                        <input type="checkbox" class="lock-checkbox" id="lock-1">
+                        <label for="lock-1">锁定</label>
+                    </div>
+                </div>
+                
+                <!-- 孔位2 -->
+                <div class="hole inactive" id="hole-2">
+                    <div class="hole-number">2</div>
+                    <div class="quality-label inactive-text">未激活</div>
+                    <div class="attribute-label inactive-text" id="attribute-2">未激活</div>
+                    <div class="hole-status">未激活</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar-2"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text-2">进度: 0%</div>
+                    <div class="guarantee-counter" id="guarantee-counter-2">金色保底: 0/90</div>
+                    <div class="lock-control">
+                        <input type="checkbox" class="lock-checkbox" id="lock-2" disabled>
+                        <label for="lock-2">锁定</label>
+                    </div>
+                </div>
+                
+                <!-- 孔位3 -->
+                <div class="hole inactive" id="hole-3">
+                    <div class="hole-number">3</div>
+                    <div class="quality-label inactive-text">未激活</div>
+                    <div class="attribute-label inactive-text" id="attribute-3">未激活</div>
+                    <div class="hole-status">未激活</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar-3"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text-3">进度: 0%</div>
+                    <div class="guarantee-counter" id="guarantee-counter-3">金色保底: 0/90</div>
+                    <div class="lock-control">
+                        <input type="checkbox" class="lock-checkbox" id="lock-3" disabled>
+                        <label for="lock-3">锁定</label>
+                    </div>
+                </div>
+                
+                <!-- 孔位4 -->
+                <div class="hole inactive" id="hole-4">
+                    <div class="hole-number">4</div>
+                    <div class="quality-label inactive-text">未激活</div>
+                    <div class="attribute-label inactive-text" id="attribute-4">未激活</div>
+                    <div class="hole-status">未激活</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar-4"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text-4">进度: 0%</div>
+                    <div class="guarantee-counter" id="guarantee-counter-4">金色保底: 0/90</div>
+                    <div class="lock-control">
+                        <input type="checkbox" class="lock-checkbox" id="lock-4" disabled>
+                        <label for="lock-4">锁定</label>
+                    </div>
+                </div>
+                
+                <!-- 孔位5 -->
+                <div class="hole inactive" id="hole-5">
+                    <div class="hole-number">5</div>
+                    <div class="quality-label inactive-text">未激活</div>
+                    <div class="attribute-label inactive-text" id="attribute-5">未激活</div>
+                    <div class="hole-status">未激活</div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar-5"></div>
+                    </div>
+                    <div class="progress-text" id="progress-text-5">进度: 0%</div>
+                    <div class="guarantee-counter" id="guarantee-counter-5">激活后必定金色</div>
+                </div>
+            </div>
+            
+            <!-- 重铸控制模块 -->
+            <div class="control-panel">
+                <h2 class="control-title"><i class="fas fa-sliders-h"></i> 重铸控制</h2>
+                
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="reforge-btn">
+                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础16.7元)</span>
+                    </button>
+                    <button class="btn btn-warning" id="custom-btn">
+                        <i class="fas fa-cogs"></i> 自定义设置
+                    </button>
+                    <button class="btn btn-secondary" id="attribute-info-btn">
+                        <i class="fas fa-list"></i> 属性详情
+                    </button>
+                    <button class="btn btn-danger" id="reset-btn">
+                        <i class="fas fa-redo"></i> 重置所有孔
+                    </button>
+                </div>
+                
+                <div class="action-note" id="action-note">
+                    点击"重铸"按钮：1. 对已激活且未锁定的孔进行品质重铸；2. 如果存在未激活的孔，则尝试激活下一个孔。
+                </div>
+                
+                <div class="probability-info">
+                    <div><strong>概率信息：</strong></div>
+                    <div>• 激活：每次重铸增加3.33%进度，可能触发直接激活</div>
+                    <div>• 重铸品质概率：蓝色82% / 紫色15% / 金色3%</div>
+                    <div>• 金色保底：90次重铸内必定出现金色，保底后重置计数</div>
+                    <div>• 第5孔激活后必定为金色品质，不参与重铸</div>
+                    <div>• 第1孔具有丰富属性分支，第2-4孔有套装属性分支</div>
+                    <div class="immediate-reset-note">※ 激活进度到达100%时，立即激活当前孔并自动进行一次重铸</div>
+                </div>
+                
+                <div class="cost-display">
+                    <div class="cost-summary">
+                        <div class="cost-item">
+                            <div class="cost-item-title">总花费</div>
+                            <div class="cost-item-value total-cost-value" id="total-cost-value">0 元</div>
+                        </div>
+                        <div class="cost-item">
+                            <div class="cost-item-title">价值</div>
+                            <div class="cost-item-value value-cost-value" id="value-cost-value">0 元</div>
+                        </div>
+                        <div class="cost-item">
+                            <div class="cost-item-title">盈亏</div>
+                            <div class="cost-item-value profit-cost-value" id="profit-cost-value">0 元</div>
+                        </div>
+                    </div>
+                    
+                    <div class="cost-breakdown" id="cost-breakdown">重铸次数: 0次</div>
+                    <div class="cost-details">
+                        <div><strong>重铸费用:</strong></div>
+                        <div></div>
+                        <div>不锁孔: 16.7元/次</div>
+                        <div>锁1孔: 33.4元/次</div>
+                        <div>锁2孔: 83.5元/次</div>
+                        <div>锁3孔: 167.0元/次</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 方案管理模块 -->
+<div class="scheme-panel">
+    <div class="scheme-title">
+        <span><i class="fas fa-save"></i> 方案管理 <span style="font-size: 0.9rem; color: #ff9800;">(最多5个)</span></span>
+        <div>
+            <button class="btn btn-warning" id="temp-save-btn" style="padding: 5px 10px; font-size: 0.9rem; margin-right: 8px;">
+                <i class="fas fa-bookmark"></i> 暂存当前方案
+            </button>
+        </div>
+    </div>
+    <div class="scheme-list" id="scheme-list">
+        <div class="scheme-item empty">
+            暂无保存的方案。出现金色品质时可保存方案。
+        </div>
+    </div>
+</div>
+           
+            <div class="info-panel">
+                <h2 class="info-title"><i class="fas fa-info-circle"></i> 使用说明</h2>
+                <ul class="rules">
+                    <li>第5孔激活后必定为金色，属性固定为：<strong>金·曜日</strong></li>
+                    <li>前4孔初始状态：第1孔已激活(蓝色)，第2-4孔未激活</li>
+                    <li>重铸功能同时执行两个操作：1. 重铸已激活且未锁定的孔品质；2. 尝试激活下一个孔</li>
+                    <li>品质重铸概率：蓝色82%，紫色15%，金色3%</li>
+                    <li>金色保底：每个孔独立计数，90次重铸内必定出现金色</li>
+                    <li>锁孔：勾选孔位前的复选框可锁定该孔，重铸时锁定孔不会被改变</li>
+                    <li><span class="gold-warning">重要：前4孔出现金色品质时，会弹出确认对话框，可选择"保存方案"</span></li>
+                    <li><span class="gold-warning">方案保存：最多保存5个方案，包含激活进度、品质和属性，金色保底计数清零</span></li>
+                    <li><span class="gold-warning">方案应用：应用方案时，方案中已激活的孔覆盖当前孔品质和属性，方案中未激活的孔保留当前状态（包括激活进度）</span></li>
+                    <li><span class="gold-warning">自定义设置：点击"自定义设置"按钮可以手动调整孔位的所有状态，包括激活进度、品质、属性等</span></li>
+                    <li>第5孔激活后自动锁定（不可更改），不参与重铸</li>
+                    <li>本工具用于记录重铸过程，帮助规避浪费金钱的风险</li>
+                    <li>所有数据自动保存到浏览器，刷新页面不会丢失</li>
+                </ul>
+            </div>
+            
+            <div class="history-panel">
+                <div class="history-title">
+                    <span><i class="fas fa-history"></i> 操作记录</span>
+                    <div class="history-buttons">
+                        <button class="btn btn-success" id="save-history" style="padding: 5px 10px; font-size: 0.9rem;">
+                            <i class="fas fa-download"></i> 保存记录
+                        </button>
+                        <button class="btn btn-secondary" id="clear-history" style="padding: 5px 10px; font-size: 0.9rem;">
+                            <i class="fas fa-trash"></i> 清空记录
+                        </button>
+                    </div>
+                </div>
+                <div class="history-list" id="history-list">
+                    <div class="history-item info-event">欢迎使用藏音武器计算器！初始状态已加载。</div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2025 藏音武器计算器 1.3 | 本工具仅用于记录和计算，不保证游戏内实际概率与计算结果一致</p>
+        </footer>
+    </div>
+
+    <!-- 自定义设置确认对话框 -->
+    <div class="modal-overlay" id="custom-confirm-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle" style="color: #ff9800;"></i>
+                <span>自定义设置</span>
+            </div>
+            <div class="modal-content">
+                <p><strong>警告：</strong>自定义设置功能允许您自由修改孔位的所有状态。</p>
+                <p>这将跳过游戏规则的限制，可能导致不符合游戏实际逻辑的状态。</p>
+                <p>此功能主要用于测试和模拟特定场景，请谨慎使用。</p>
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 152, 0, 0.1); border-radius: 6px; border-left: 3px solid #ff9800;">
+                    <p><strong>您可以修改的内容：</strong></p>
+                    <ul>
+                        <li>孔位的激活状态（是否激活）</li>
+                        <li>已激活孔位的品质（蓝色/紫色/金色）</li>
+                        <li>已激活孔位的属性（根据孔位和品质选择）</li>
+                        <li>未激活孔位的激活进度（0-100%）</li>
+                        <li>金色保底计数（0-90）</li>
+                        <li>锁定状态（前4孔）</li>
+                    </ul>
+                </div>
+                <p>确定要使用自定义设置功能吗？</p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-close" id="custom-cancel-btn">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="custom-confirm-btn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自定义设置对话框 -->
+    <div class="modal-overlay" id="custom-modal">
+        <div class="modal custom-modal">
+            <div class="modal-header">
+                <i class="fas fa-cogs" style="color: #ff9800;"></i>
+                <span>自定义设置</span>
+            </div>
+            <div class="modal-content">
+                <div id="custom-holes-container">
+                    <!-- 孔位设置将动态生成 -->
+                </div>
+                
+                <div class="custom-note">
+                    <p><strong>使用说明：</strong></p>
+                    <p>1. 您可以自由调整每个孔位的状态</p>
+                    <p>2. 修改后点击"保存设置"按钮将应用所有更改</p>
+                    <p>3. 第5孔激活后自动设置为金色曜日，且自动锁定</p>
+                    <p>4. 自定义设置不会影响总花费和重铸次数统计</p>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-close" id="custom-close-btn">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="custom-save-btn">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 金色品质确认对话框 -->
+    <div class="modal-overlay" id="gold-confirm-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle" style="color: #ffd700;"></i>
+                <span>发现金色品质！</span>
+            </div>
+            <div class="modal-content">
+                <p>恭喜！孔位 <span id="gold-hole-number" style="color: #ffd700; font-weight: bold;">1</span> 出现了金色品质！</p>
+                <p>金色品质是稀有属性，下次重铸将会被重置为蓝色。</p>
+                <p>请选择操作：</p>
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 152, 0, 0.1); border-radius: 6px; border-left: 3px solid #ff9800;">
+                    <p><strong>继续重铸</strong>：继续下一次重铸操作</p>
+                    <p><strong>保存方案</strong>：将当前孔位状态临时保存（最多5个）</p>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-confirm" id="modal-confirm-btn">继续重铸</button>
+                <button class="modal-btn modal-btn-save" id="modal-save-btn">保存方案</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 属性详情对话框 -->
+    <div class="modal-overlay" id="attribute-info-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <i class="fas fa-list-alt" style="color: #6ab7ff;"></i>
+                <span>属性详情</span>
+            </div>
+            <div class="modal-content">
+                <div class="attribute-section">
+                    <h4>第1孔属性列表：</h4>
+                    <p><strong>蓝色品质（10种，各1/10概率）</strong></p>
+                    <div class="attribute-list">
+                        <div class="attribute-item blue-attribute">蓝·套装1</div>
+                        <div class="attribute-item blue-attribute">蓝·胭脂</div>
+                        <div class="attribute-item blue-attribute">蓝·青金</div>
+                        <div class="attribute-item blue-attribute">蓝·苍茫</div>
+                        <div class="attribute-item blue-attribute">蓝·朱栏</div>
+                        <div class="attribute-item blue-attribute">蓝·松绿</div>
+                        <div class="attribute-item blue-attribute">蓝·芽黄</div>
+                        <div class="attribute-item blue-attribute">蓝·暮紫</div>
+                        <div class="attribute-item blue-attribute">蓝·羽灰</div>
+                        <div class="attribute-item blue-attribute">蓝·墨尘</div>
+                    </div>
+                </div>
+                
+                <div class="attribute-section">
+                    <p><strong>紫色品质（11种，各1/11概率）</strong></p>
+                    <div class="attribute-list">
+                        <div class="attribute-item purple-attribute">紫·套装1</div>
+                        <div class="attribute-item purple-attribute">紫·套装2</div>
+                        <div class="attribute-item purple-attribute">紫·杏粉</div>
+                        <div class="attribute-item purple-attribute">紫·烟蓝</div>
+                        <div class="attribute-item purple-attribute">紫·水色</div>
+                        <div class="attribute-item purple-attribute">紫·杜鹃</div>
+                        <div class="attribute-item purple-attribute">紫·微草</div>
+                        <div class="attribute-item purple-attribute">紫·南桔</div>
+                        <div class="attribute-item purple-attribute">紫·藤紫</div>
+                        <div class="attribute-item purple-attribute">紫·白贝</div>
+                        <div class="attribute-item purple-attribute">紫·寒鸦</div>
+                    </div>
+                </div>
+                
+                <div class="attribute-section">
+                    <p><strong>金色品质（11种，各1/11概率）</strong></p>
+                    <div class="attribute-list">
+                        <div class="attribute-item gold-attribute">金·套装1</div>
+                        <div class="attribute-item gold-attribute">金·套装2</div>
+                        <div class="attribute-item gold-attribute">金·桃晶</div>
+                        <div class="attribute-item gold-attribute">金·龙渊</div>
+                        <div class="attribute-item gold-attribute">金·冰泉</div>
+                        <div class="attribute-item gold-attribute">金·红锦</div>
+                        <div class="attribute-item gold-attribute">金·碧玉</div>
+                        <div class="attribute-item gold-attribute">金·黄金</div>
+                        <div class="attribute-item gold-attribute">金·紫琉</div>
+                        <div class="attribute-item gold-attribute">金·珍珠</div>
+                        <div class="attribute-item gold-attribute">金·黑曜</div>
+                    </div>
+                </div>
+                
+                <div class="attribute-section">
+                    <h4>第2-4孔属性：</h4>
+                    <ul>
+                        <li>蓝色品质：100%概率为<strong>蓝·套装1</strong></li>
+                        <li>紫色品质：50%概率为<strong>紫·套装1</strong>，50%概率为<strong>紫·套装2</strong></li>
+                        <li>金色品质：50%概率为<strong>金·套装1</strong>，50%概率为<strong>金·套装2</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="attribute-section">
+                    <h4>第5孔属性：</h4>
+                    <p>激活后必定为金色，属性固定为：<strong>金·曜日</strong></p>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-confirm" id="attribute-modal-close-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 激活概率计算函数（2-5孔）
+        function getActivationProbability(activationAttempts) {
+            if (activationAttempts <= 10) {
+                return 0.02; // 2%
+            } else if (activationAttempts <= 20) {
+                return 0.035; // 3.5%
+            } else {
+                return 0.05; // 5%
+            }
+        }
+
+        // 金色概率计算函数（1-4孔）
+        function getGoldProbability(guaranteeCounter) {
+            if (guaranteeCounter <= 30) {
+                return 0.03; // 3%
+            } else if (guaranteeCounter <= 60) {
+                return 0.04; // 4%
+            } else {
+                return 0.05; // 5%
+            }
+        }
+        
+        // 属性定义
+        const attributes = {
+            hole1: {
+                blue: ['套装1', '胭脂', '青金', '苍茫', '朱栏', '松绿', '芽黄', '暮紫', '羽灰', '墨尘'],
+                purple: ['套装1', '套装2', '杏粉', '烟蓝', '水色', '杜鹃', '微草', '南桔', '藤紫', '白贝', '寒鸦'],
+                gold: ['套装1', '套装2', '桃晶', '龙渊', '冰泉', '红锦', '碧玉', '黄金', '紫琉', '珍珠', '黑曜']
+            },
+            hole234: {
+                blue: ['套装1'],
+                purple: ['套装1', '套装2'],
+                gold: ['套装1', '套装2']
+            },
+            hole5: {
+                gold: ['曜日']
+            }
+        };
+
+        // 武器状态数据
+        const weaponState = {
+            holes: [
+                { id: 1, active: true, quality: 'blue', attribute: '套装1', locked: false, progress: 100, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 2, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 3, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 4, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 5, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 }
+            ],
+            totalCost: 0,
+            reforgeCount: 0,
+            nextHoleToActivate: 2,
+            history: [],
+            goldPendingReset: [],
+            schemes: []
+        };
+
+        // 当前出现金色的孔位（用于保存方案时记录）
+        let currentGoldHoles = [];
+
+        // 初始化函数
+        function init() {
+            const savedState = localStorage.getItem('weaponState');
+            if (savedState) {
+                try {
+                    const parsed = JSON.parse(savedState);
+                    Object.assign(weaponState, parsed);
+                    updateTotalCostDisplay();
+                    updateHoleDisplays();
+                    updateProgressBars();
+                    updateGuaranteeCounters();
+                    updateHistoryDisplay();
+                    updateSchemeList(); // 更新方案列表
+                    updateValueAndProfit(); // 更新价值和盈亏
+                    console.log('状态已从本地存储加载');
+                } catch (e) {
+                    console.error('加载保存状态失败:', e);
+                }
+            }
+               
+            // 添加暂存按钮事件监听（添加到现有的事件监听器后面）
+            document.getElementById('temp-save-btn').addEventListener('click', saveTempScheme);
+            document.getElementById('reforge-btn').addEventListener('click', reforgeAction);
+            document.getElementById('reset-btn').addEventListener('click', resetAll);
+            document.getElementById('save-history').addEventListener('click', saveHistoryToFile);
+            document.getElementById('clear-history').addEventListener('click', clearHistory);
+            document.getElementById('attribute-info-btn').addEventListener('click', showAttributeInfo);
+            document.getElementById('custom-btn').addEventListener('click', showCustomConfirm);
+            
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`lock-${i}`).addEventListener('change', function() {
+                    weaponState.holes[i-1].locked = this.checked;
+                    updateLockControls();
+                    saveState();
+                });
+            }
+            
+            // 绑定模态对话框事件
+            document.getElementById('modal-save-btn').addEventListener('click', saveCurrentScheme);
+            document.getElementById('modal-confirm-btn').addEventListener('click', closeGoldModal);
+            document.getElementById('attribute-modal-close-btn').addEventListener('click', closeAttributeModal);
+            document.getElementById('custom-confirm-btn').addEventListener('click', showCustomSettings);
+            document.getElementById('custom-cancel-btn').addEventListener('click', closeCustomConfirm);
+            document.getElementById('custom-close-btn').addEventListener('click', closeCustomSettings);
+            document.getElementById('custom-save-btn').addEventListener('click', saveCustomSettings);
+            
+            updateLockControls();
+            console.log('藏音武器计算器已初始化');
+        }
+
+        // 显示自定义设置确认对话框
+        function showCustomConfirm() {
+            document.getElementById('custom-confirm-modal').classList.add('active');
+        }
+
+        // 关闭自定义设置确认对话框
+        function closeCustomConfirm() {
+            document.getElementById('custom-confirm-modal').classList.remove('active');
+        }
+
+// 更新显示自定义设置对话框的函数
+function showCustomSettings() {
+    closeCustomConfirm();
+    
+    // 构建自定义设置界面
+    const container = document.getElementById('custom-holes-container');
+    container.innerHTML = '';
+    
+    weaponState.holes.forEach((hole, index) => {
+        const holeSetting = document.createElement('div');
+        holeSetting.className = 'custom-hole-setting';
+        holeSetting.id = `custom-hole-${hole.id}`;
+        
+        // 获取当前品质（如果未激活则使用默认蓝色）
+        const currentQuality = hole.active ? hole.quality : 'blue';
+        
+        // 根据孔位获取可用的属性列表
+        let attributeOptions = '';
+        let selectedAttribute = hole.attribute || '';
+        
+        if (hole.id === 1) {
+            // 第1孔有丰富的属性
+            const attrList = attributes.hole1[currentQuality] || [];
+            attributeOptions = attrList.map(attr => 
+                `<option value="${attr}" ${selectedAttribute === attr ? 'selected' : ''}>${attr}</option>`
+            ).join('');
+        } else if (hole.id >= 2 && hole.id <= 4) {
+            // 第2-4孔有套装属性
+            const attrList = attributes.hole234[currentQuality] || [];
+            attributeOptions = attrList.map(attr => 
+                `<option value="${attr}" ${selectedAttribute === attr ? 'selected' : ''}>${attr}</option>`
+            ).join('');
+        } else if (hole.id === 5) {
+            // 第5孔只有金色曜日
+            attributeOptions = '<option value="曜日" selected>曜日</option>';
+        }
+        
+        holeSetting.innerHTML = `
+            <div class="custom-hole-header">
+                <div class="custom-hole-title">孔位 ${hole.id}</div>
+                <div class="custom-checkbox-label">
+                    <input type="checkbox" class="custom-checkbox" id="custom-active-${hole.id}" 
+                           ${hole.active ? 'checked' : ''} ${hole.id === 5 && hole.active ? 'disabled' : ''}>
+                    <label for="custom-active-${hole.id}">已激活</label>
+                </div>
+            </div>
+            <div class="custom-hole-content">
+                <div class="custom-control-group">
+                    <label class="custom-control-label">品质</label>
+                    <select class="custom-select" id="custom-quality-${hole.id}" ${!hole.active || (hole.id === 5 && hole.active) ? 'disabled' : ''}>
+                        <option value="blue" ${currentQuality === 'blue' ? 'selected' : ''}>蓝色</option>
+                        <option value="purple" ${currentQuality === 'purple' ? 'selected' : ''}>紫色</option>
+                        <option value="gold" ${currentQuality === 'gold' ? 'selected' : ''}>金色</option>
+                    </select>
+                </div>
+                <div class="custom-control-group">
+                    <label class="custom-control-label">属性</label>
+                    <select class="custom-select" id="custom-attribute-${hole.id}" ${!hole.active || (hole.id === 5 && hole.active) ? 'disabled' : ''}>
+                        ${attributeOptions}
+                    </select>
+                </div>
+                <div class="custom-control-group">
+                    <label class="custom-control-label">激活进度 (${hole.progress.toFixed(1)}%)</label>
+                    <input type="range" class="custom-input" id="custom-progress-${hole.id}" 
+                           min="0" max="100" step="0.1" value="${hole.progress}" ${hole.active ? 'disabled' : ''}>
+                    <div class="custom-value-display" id="custom-progress-value-${hole.id}">${hole.progress.toFixed(1)}%</div>
+                </div>
+                <div class="custom-control-group">
+                    <label class="custom-control-label">金色保底计数</label>
+                    <input type="number" class="custom-input" id="custom-guarantee-${hole.id}" 
+                           min="0" max="90" value="${hole.guaranteeCounter}" ${hole.id === 5 ? 'disabled' : ''}>
+                </div>
+                ${hole.id <= 4 ? `
+                <div class="custom-control-group">
+                    <div class="custom-checkbox-label">
+                        <input type="checkbox" class="custom-checkbox" id="custom-locked-${hole.id}" 
+                               ${hole.locked ? 'checked' : ''} ${!hole.active ? 'disabled' : ''}>
+                        <label for="custom-locked-${hole.id}">锁定</label>
+                    </div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+        
+        container.appendChild(holeSetting);
+        
+        // 绑定事件
+        const activeCheckbox = document.getElementById(`custom-active-${hole.id}`);
+        const qualitySelect = document.getElementById(`custom-quality-${hole.id}`);
+        const progressSlider = document.getElementById(`custom-progress-${hole.id}`);
+        const progressValue = document.getElementById(`custom-progress-value-${hole.id}`);
+        
+        if (activeCheckbox) {
+            activeCheckbox.addEventListener('change', function() {
+                const isActive = this.checked;
+                if (qualitySelect) qualitySelect.disabled = !isActive;
+                
+                const attributeSelect = document.getElementById(`custom-attribute-${hole.id}`);
+                const progressSlider = document.getElementById(`custom-progress-${hole.id}`);
+                const guaranteeInput = document.getElementById(`custom-guarantee-${hole.id}`);
+                
+                if (hole.id === 5 && isActive) {
+                    // 第5孔激活后自动设置为金色曜日
+                    if (qualitySelect) {
+                        qualitySelect.value = 'gold';
+                        qualitySelect.disabled = true;
+                    }
+                    if (attributeSelect) {
+                        attributeSelect.innerHTML = '<option value="曜日" selected>曜日</option>';
+                        attributeSelect.disabled = true;
+                    }
+                    if (progressSlider) progressSlider.disabled = true;
+                    if (guaranteeInput) guaranteeInput.disabled = true;
+                } else if (hole.id === 5 && !isActive) {
+                    // 第5孔未激活时可以调整
+                    if (qualitySelect) qualitySelect.disabled = false;
+                    if (attributeSelect) {
+                        attributeSelect.disabled = false;
+                        updateAttributeOptions(hole.id, qualitySelect ? qualitySelect.value : 'blue');
+                    }
+                    if (progressSlider) progressSlider.disabled = false;
+                    if (guaranteeInput) guaranteeInput.disabled = false;
+                } else {
+                    // 其他孔位
+                    if (progressSlider) progressSlider.disabled = isActive;
+                    if (attributeSelect) attributeSelect.disabled = !isActive;
+                    
+                    // 更新锁定复选框状态
+                    if (hole.id <= 4) {
+                        const lockCheckbox = document.getElementById(`custom-locked-${hole.id}`);
+                        if (lockCheckbox) lockCheckbox.disabled = !isActive;
+                    }
+                }
+                
+                // 更新属性选项
+                const currentQuality = qualitySelect ? qualitySelect.value : 'blue';
+                updateAttributeOptions(hole.id, currentQuality);
+            });
+        }
+        
+        if (qualitySelect) {
+            qualitySelect.addEventListener('change', function() {
+                updateAttributeOptions(hole.id, this.value);
+            });
+        }
+        
+        if (progressSlider) {
+            progressSlider.addEventListener('input', function() {
+                progressValue.textContent = this.value + '%';
+            });
+        }
+    });
+    
+    document.getElementById('custom-modal').classList.add('active');
+}
+
+// 更新属性选项函数（修复版）
+function updateAttributeOptions(holeId, quality) {
+    const attributeSelect = document.getElementById(`custom-attribute-${holeId}`);
+    if (!attributeSelect || attributeSelect.disabled) return;
+    
+    let attributeList = [];
+    
+    // 根据孔位和品质获取属性列表
+    if (holeId === 1) {
+        attributeList = attributes.hole1[quality] || [];
+    } else if (holeId >= 2 && holeId <= 4) {
+        attributeList = attributes.hole234[quality] || [];
+    } else if (holeId === 5) {
+        // 第5孔激活后固定为金色曜日
+        if (quality === 'gold') {
+            attributeList = ['曜日'];
+        } else {
+            // 第5孔未激活时可能有其他品质
+            attributeList = attributes.hole5[quality] || [];
+        }
+    }
+    
+    // 保存当前选中的值
+    const currentValue = attributeSelect.value;
+    
+    // 生成新的选项
+    attributeSelect.innerHTML = attributeList.map(attr => 
+        `<option value="${attr}">${attr}</option>`
+    ).join('');
+    
+    // 如果当前值在新列表中，保持选择；否则选择第一个选项
+    if (attributeList.includes(currentValue)) {
+        attributeSelect.value = currentValue;
+    } else if (attributeList.length > 0) {
+        attributeSelect.value = attributeList[0];
+    }
+}
+        // 关闭自定义设置对话框
+        function closeCustomSettings() {
+            document.getElementById('custom-modal').classList.remove('active');
+        }
+
+        // 保存自定义设置
+        function saveCustomSettings() {
+            // 收集所有设置
+            const newHoles = [];
+            let hasActiveHole5 = false;
+            
+            for (let i = 1; i <= 5; i++) {
+                const activeCheckbox = document.getElementById(`custom-active-${i}`);
+                const qualitySelect = document.getElementById(`custom-quality-${i}`);
+                const attributeSelect = document.getElementById(`custom-attribute-${i}`);
+                const progressSlider = document.getElementById(`custom-progress-${i}`);
+                const guaranteeInput = document.getElementById(`custom-guarantee-${i}`);
+                const lockedCheckbox = document.getElementById(`custom-locked-${i}`);
+                
+                const isActive = activeCheckbox ? activeCheckbox.checked : false;
+                const quality = qualitySelect ? qualitySelect.value : 'blue';
+                const attribute = attributeSelect ? attributeSelect.value : '';
+                const progress = progressSlider ? parseFloat(progressSlider.value) : 0;
+                const guaranteeCounter = guaranteeInput ? parseInt(guaranteeInput.value) : 0;
+                const locked = lockedCheckbox ? lockedCheckbox.checked : false;
+                
+                // 第5孔特殊处理
+                if (i === 5 && isActive) {
+                    hasActiveHole5 = true;
+                }
+                
+                newHoles.push({
+                    id: i,
+                    active: isActive,
+                    quality: isActive ? quality : 'blue',
+                    attribute: isActive ? attribute : '',
+                    locked: isActive ? locked : false,
+                    progress: isActive ? 100 : progress,
+                    guaranteeCounter: guaranteeCounter,
+                    activationAttempts: weaponState.holes[i-1].activationAttempts // 保持原值
+                });
+            }
+            
+            // 应用新设置
+            weaponState.holes = newHoles;
+            
+            // 更新金色待重置列表
+            weaponState.goldPendingReset = [];
+            for (let i = 0; i < 4; i++) {
+                if (weaponState.holes[i].active && weaponState.holes[i].quality === 'gold') {
+                    weaponState.goldPendingReset.push(i);
+                }
+            }
+            
+            // 更新下一个要激活的孔
+            updateNextHoleToActivate();
+            
+            // 更新显示
+            updateHoleDisplays();
+            updateProgressBars();
+            updateGuaranteeCounters();
+            updateLockControls();
+            updateValueAndProfit();
+            saveState();
+            
+            // 添加历史记录
+            addHistory('已应用自定义设置', 'info');
+            
+            // 关闭对话框
+            closeCustomSettings();
+        }
+
+        // 计算武器价值（根据新公式）
+        function calculateWeaponValue() {
+            let totalValue = 0;
+            let activeCount = 0;
+            
+            // 统计激活的孔位数量
+            for (let i = 0; i < weaponState.holes.length; i++) {
+                if (weaponState.holes[i].active) {
+                    activeCount++;
+                }
+            }
+            
+            // 基础价值：1500 + (激活孔数 - 1) * 400
+            totalValue += 1500;
+            if (activeCount > 0) {
+                totalValue += (activeCount - 1) * 400;
+            }
+            
+            // 计算第一孔的X值
+            let X = 1.0; // 默认值
+            if (weaponState.holes[0].active) {
+                const hole1 = weaponState.holes[0];
+                
+                // 基础X值
+                if (hole1.quality === 'gold') {
+                    X = 1.2;
+                } else if (hole1.quality === 'purple') {
+                    X = 1.1;
+                } else if (hole1.quality === 'blue') {
+                    X = 1.0;
+                }
+                
+                // 特殊情况加成
+                if (hole1.quality === 'gold') {
+                    if (hole1.attribute === '套装1' || hole1.attribute === '套装2') {
+                        X *= 1.2; // 情况1：金色套装1或套装2，X额外乘1.2
+                    } else if (hole1.attribute === '珍珠') {
+                        X *= 1.1; // 情况2：金色珍珠，X额外乘1.1
+                    }
+                }
+            }
+            
+            // 计算Y值（根据第1-4孔的金色套装相同名称数量）
+            let sameNameCount = 0;
+            // 收集第1-4孔中金色套装的属性名
+            const goldSetNames = [];
+            for (let i = 0; i < 4; i++) { // 孔位1-4的索引是0,1,2,3
+                if (weaponState.holes[i].active) {
+                    const hole = weaponState.holes[i];
+                    if (hole.quality === 'gold' && (hole.attribute === '套装1' || hole.attribute === '套装2')) {
+                        goldSetNames.push(hole.attribute);
+                    }
+                }
+            }
+            
+            // 如果有金色套装，计算相同名字的最大数量
+            if (goldSetNames.length > 0) {
+                // 统计每个名字出现的次数
+                const nameCount = {};
+                goldSetNames.forEach(name => {
+                    nameCount[name] = (nameCount[name] || 0) + 1;
+                });
+                
+                // 找出最大值
+                sameNameCount = Math.max(...Object.values(nameCount));
+            }
+            
+            // 计算Y值：Y=1*(1+相同名字数量*0.1)
+            const Y = 1 * (1 + sameNameCount * 0.1);
+            
+            // 计算前四个激活孔的A值之和（A、B、C、D）
+            let sumA = 0;
+            for (let i = 0; i < 4; i++) { // 只计算前四个孔
+                const hole = weaponState.holes[i];
+                if (!hole.active) continue; // 如果未激活，则贡献0
+                
+                if (hole.quality === 'gold') {
+                    sumA += 900;
+                } else if (hole.quality === 'purple') {
+                    sumA += 200;
+                } else if (hole.quality === 'blue') {
+                    sumA += 50;
+                }
+            }
+            
+            // 计算乘积部分：sumA * X * Y
+            const productValue = sumA * X * Y;
+            totalValue += productValue;
+            
+            return totalValue;
+        }
+
+        // 更新价值和盈亏显示
+        function updateValueAndProfit() {
+            const value = calculateWeaponValue();
+            const profit = value - weaponState.totalCost;
+            
+            document.getElementById('value-cost-value').textContent = value.toFixed(1) + ' 元';
+            
+            const profitElement = document.getElementById('profit-cost-value');
+            profitElement.textContent = profit.toFixed(1) + ' 元';
+            
+            if (profit < 0) {
+                profitElement.classList.add('profit-negative');
+            } else {
+                profitElement.classList.remove('profit-negative');
+            }
+        }
+
+        // 显示属性详情
+        function showAttributeInfo() {
+            document.getElementById('attribute-info-modal').classList.add('active');
+        }
+
+        // 关闭属性详情对话框
+        function closeAttributeModal() {
+            document.getElementById('attribute-info-modal').classList.remove('active');
+        }
+
+        // 显示金色确认对话框
+        function showGoldConfirmModal(holeNumber) {
+            document.getElementById('gold-hole-number').textContent = holeNumber;
+            document.getElementById('gold-confirm-modal').classList.add('active');
+        }
+
+        // 关闭金色确认对话框
+        function closeGoldModal() {
+            document.getElementById('gold-confirm-modal').classList.remove('active');
+        }
+
+// 暂存当前方案
+function saveTempScheme() {
+    // 检查是否已达到最大方案数
+    if (weaponState.schemes.length >= 5) {
+        alert('已保存5个方案，达到上限。请删除一个方案后再保存。');
+        return;
+    }
+    
+    // 创建方案对象
+    const scheme = {
+        id: Date.now(), // 使用时间戳作为唯一ID
+        name: `暂存方案${weaponState.schemes.length + 1}`,
+        timestamp: new Date().toLocaleString(),
+        holes: [],
+        type: 'temp' // 标记为暂存方案
+    };
+    
+    // 复制孔位状态（金色保底次数清零）
+    for (let i = 0; i < weaponState.holes.length; i++) {
+        const originalHole = weaponState.holes[i];
+        const holeCopy = {
+            id: originalHole.id,
+            active: originalHole.active,
+            quality: originalHole.quality,
+            attribute: originalHole.attribute,
+            locked: originalHole.locked,
+            progress: originalHole.progress,
+            guaranteeCounter: 0 // 金色保底次数清零
+        };
+        scheme.holes.push(holeCopy);
+    }
+    
+    // 添加到方案列表
+    weaponState.schemes.push(scheme);
+    
+    // 更新方案列表显示
+    updateSchemeList();
+    
+    // 保存状态
+    saveState();
+    
+    // 添加历史记录
+    addHistory(`已暂存当前方案：${scheme.name}`, 'info');
+}
+
+// 更新方案列表显示（修改版，区分金色方案和暂存方案）
+function updateSchemeList() {
+    const schemeList = document.getElementById('scheme-list');
+    schemeList.innerHTML = '';
+    
+    if (weaponState.schemes.length === 0) {
+        schemeList.innerHTML = '<div class="scheme-item empty">暂无保存的方案。出现金色品质时可保存方案。</div>';
+        return;
+    }
+    
+    // 按保存时间倒序排列
+    const sortedSchemes = [...weaponState.schemes].sort((a, b) => b.id - a.id);
+    
+    sortedSchemes.forEach(scheme => {
+        const schemeItem = document.createElement('div');
+        schemeItem.className = 'scheme-item';
+        
+        // 计算金色孔数量
+        const goldCount = scheme.holes.filter(h => h.active && h.quality === 'gold').length;
+        
+        // 方案名称显示
+        let schemeName = scheme.name;
+        let borderColor = '#ff9800'; // 默认橙色边框
+        
+        if (scheme.type === 'temp') {
+            // 暂存方案显示为蓝色边框
+            borderColor = '#2196f3';
+            schemeItem.style.borderLeftColor = borderColor;
+        } else {
+            // 金色方案根据金色数量显示不同边框颜色
+            if (goldCount > 0) {
+                borderColor = '#ffd700'; // 金色边框
+                schemeItem.style.borderLeftColor = borderColor;
+            }
+        }
+        
+        schemeItem.innerHTML = `
+            <div class="scheme-header">
+                <div class="scheme-name" style="${scheme.type === 'temp' ? 'color: #90caf9;' : (goldCount > 0 ? 'color: #ffd54f;' : 'color: #ff9800;')}">
+                    ${scheme.name} (${goldCount}个金色)
+                    ${scheme.type === 'temp' ? '<span style="color: #90caf9; font-size: 0.8rem;">[暂存]</span>' : ''}
+                </div>
+                <div class="scheme-time">${scheme.timestamp}</div>
+            </div>
+            <div class="scheme-holes">
+                ${scheme.holes.map(hole => {
+                    let qualityText = '';
+                    let attributeText = '';
+                    
+                    if (!hole.active) {
+                        return `<div class="scheme-hole inactive">
+                            <div class="scheme-hole-number">${hole.id}</div>
+                            <div class="scheme-hole-quality">未激活</div>
+                            <div class="scheme-hole-attribute">进度: ${Math.round(hole.progress)}%</div>
+                        </div>`;
+                    } else {
+                        if (hole.quality === 'blue') {
+                            qualityText = '蓝色';
+                            attributeText = '蓝·' + hole.attribute;
+                        } else if (hole.quality === 'purple') {
+                            qualityText = '紫色';
+                            attributeText = '紫·' + hole.attribute;
+                        } else if (hole.quality === 'gold') {
+                            qualityText = '金色';
+                            if (hole.id === 5 && hole.attribute === '曜日') {
+                                attributeText = '金·曜日';
+                            } else {
+                                attributeText = '金·' + hole.attribute;
+                            }
+                        }
+                        
+                        return `<div class="scheme-hole ${hole.quality}">
+                            <div class="scheme-hole-number">${hole.id}</div>
+                            <div class="scheme-hole-quality">${qualityText}</div>
+                            <div class="scheme-hole-attribute" title="${attributeText}">${attributeText}</div>
+                        </div>`;
+                    }
+                }).join('')}
+            </div>
+            <div class="scheme-actions">
+                <button class="scheme-btn scheme-btn-apply" onclick="applyScheme(${scheme.id})">应用方案</button>
+                <button class="scheme-btn scheme-btn-delete" onclick="deleteScheme(${scheme.id})">删除</button>
+            </div>
+        `;
+        
+        // 设置边框颜色
+        schemeItem.style.borderLeftColor = borderColor;
+        
+        schemeList.appendChild(schemeItem);
+    });
+}
+
+// 修改保存金色方案的函数，添加type标记
+function saveCurrentScheme() {
+    // 检查是否已达到最大方案数
+    if (weaponState.schemes.length >= 5) {
+        alert('已保存5个方案，达到上限。请删除一个方案后再保存。');
+        return;
+    }
+    
+    // 创建方案对象
+    const scheme = {
+        id: Date.now(), // 使用时间戳作为唯一ID
+        name: `金色方案${weaponState.schemes.filter(s => !s.type || s.type !== 'temp').length + 1}`,
+        timestamp: new Date().toLocaleString(),
+        holes: [],
+        type: 'gold' // 标记为金色方案
+    };
+    
+    // 复制孔位状态（金色保底次数清零）
+    for (let i = 0; i < weaponState.holes.length; i++) {
+        const originalHole = weaponState.holes[i];
+        const holeCopy = {
+            id: originalHole.id,
+            active: originalHole.active,
+            quality: originalHole.quality,
+            attribute: originalHole.attribute,
+            locked: originalHole.locked,
+            progress: originalHole.progress,
+            guaranteeCounter: 0 // 金色保底次数清零
+        };
+        scheme.holes.push(holeCopy);
+    }
+    
+    // 添加到方案列表
+    weaponState.schemes.push(scheme);
+    
+    // 更新方案列表显示
+    updateSchemeList();
+    
+    // 保存状态
+    saveState();
+    
+    // 添加历史记录
+    addHistory(`已保存金色方案：${scheme.name}`, 'info');
+    
+    // 关闭对话框
+    closeGoldModal();
+}
+
+        // 应用方案（修复后的逻辑）
+        function applyScheme(schemeId) {
+            // 找到要应用的方案
+            const schemeIndex = weaponState.schemes.findIndex(s => s.id === schemeId);
+            if (schemeIndex === -1) return;
+            
+            const scheme = weaponState.schemes[schemeIndex];
+            
+            // 确认是否应用方案
+            if (!confirm(`确定要应用方案"${scheme.name}"吗？应用后：\n1. 方案中已激活的孔将覆盖当前孔品质和属性\n2. 方案中未激活的孔将保留当前状态（包括激活进度）`)) {
+                return;
+            }
+            
+            // 应用方案逻辑
+            for (let i = 0; i < scheme.holes.length; i++) {
+                const schemeHole = scheme.holes[i];
+                const targetHole = weaponState.holes[i];
+                
+                // 如果方案中孔位已激活，则用方案中的品质、属性覆盖当前孔位，并将进度设为100
+                if (schemeHole.active) {
+                    // 保留当前孔的保底计数、锁定状态和激活进度（但已激活的孔进度应为100）
+                    const currentGuaranteeCounter = targetHole.guaranteeCounter;
+                    const currentLocked = targetHole.locked;
+                    
+                    // 用方案中的品质和属性覆盖
+                    targetHole.active = true;
+                    targetHole.quality = schemeHole.quality;
+                    targetHole.attribute = schemeHole.attribute;
+                    targetHole.progress = 100; // 已激活的孔进度为100%
+                    
+                    // 保留当前保底计数和锁定状态
+                    targetHole.guaranteeCounter = currentGuaranteeCounter;
+                    targetHole.locked = currentLocked;
+                    
+                    // 特殊处理第5孔
+                    if (schemeHole.id === 5 && schemeHole.active) {
+                        targetHole.quality = 'gold';
+                        targetHole.attribute = '曜日';
+                        targetHole.locked = true; // 第5孔激活后自动锁定
+                        targetHole.guaranteeCounter = 0; // 第5孔不需要保底计数
+                    }
+                } 
+                // 如果方案中孔位未激活，则完全保留当前孔位的状态（包括激活进度）
+                else {
+                    // 什么都不做，完全保留当前孔位的状态
+                }
+                
+                // 更新锁定复选框状态
+                const checkbox = document.getElementById(`lock-${schemeHole.id}`);
+                if (checkbox) {
+                    checkbox.checked = targetHole.locked;
+                    // 第5孔激活后不可锁定，其他孔根据激活状态决定
+                    checkbox.disabled = !targetHole.active || targetHole.id === 5;
+                }
+            }
+            
+            // 更新下一个要激活的孔位
+            updateNextHoleToActivate();
+            
+            // 清空金色待重置列表（因为方案可能改变了金色状态）
+            weaponState.goldPendingReset = [];
+            
+            // 重新检查金色状态（只检查前4孔）
+            for (let i = 0; i < 4; i++) {
+                if (weaponState.holes[i].active && weaponState.holes[i].quality === 'gold') {
+                    if (!weaponState.goldPendingReset.includes(i)) {
+                        weaponState.goldPendingReset.push(i);
+                    }
+                }
+            }
+            
+            // 更新显示
+            updateHoleDisplays();
+            updateProgressBars();
+            updateGuaranteeCounters();
+            updateLockControls();
+            updateSchemeList();
+            updateValueAndProfit(); // 更新价值和盈亏
+            saveState();
+            
+            // 添加历史记录
+            addHistory(`已应用方案：${scheme.name}（方案中已激活孔覆盖当前孔品质和属性，未激活孔保留当前状态）`, 'info');
+        }
+
+        // 删除方案
+        function deleteScheme(schemeId) {
+            if (!confirm('确定要删除这个方案吗？')) {
+                return;
+            }
+            
+            weaponState.schemes = weaponState.schemes.filter(s => s.id !== schemeId);
+            updateSchemeList();
+            saveState();
+            
+            addHistory('已删除一个方案', 'info');
+        }
+
+        // 更新方案列表显示
+        function updateSchemeList() {
+            const schemeList = document.getElementById('scheme-list');
+            schemeList.innerHTML = '';
+            
+            if (weaponState.schemes.length === 0) {
+                schemeList.innerHTML = '<div class="scheme-item empty">暂无保存的方案。出现金色品质时可保存方案。</div>';
+                return;
+            }
+            
+            // 按保存时间倒序排列
+            const sortedSchemes = [...weaponState.schemes].sort((a, b) => b.id - a.id);
+            
+            sortedSchemes.forEach(scheme => {
+                const schemeItem = document.createElement('div');
+                schemeItem.className = 'scheme-item';
+                
+                // 计算金色孔数量
+                const goldCount = scheme.holes.filter(h => h.active && h.quality === 'gold').length;
+                
+                schemeItem.innerHTML = `
+                    <div class="scheme-header">
+                        <div class="scheme-name">${scheme.name} (${goldCount}个金色)</div>
+                        <div class="scheme-time">${scheme.timestamp}</div>
+                    </div>
+                    <div class="scheme-holes">
+                        ${scheme.holes.map(hole => {
+                            let qualityText = '';
+                            let attributeText = '';
+                            
+                            if (!hole.active) {
+                                return `<div class="scheme-hole inactive">
+                                    <div class="scheme-hole-number">${hole.id}</div>
+                                    <div class="scheme-hole-quality">未激活</div>
+                                    <div class="scheme-hole-attribute">进度: ${Math.round(hole.progress)}%</div>
+                                </div>`;
+                            } else {
+                                if (hole.quality === 'blue') {
+                                    qualityText = '蓝色';
+                                    attributeText = '蓝·' + hole.attribute;
+                                } else if (hole.quality === 'purple') {
+                                    qualityText = '紫色';
+                                    attributeText = '紫·' + hole.attribute;
+                                } else if (hole.quality === 'gold') {
+                                    qualityText = '金色';
+                                    if (hole.id === 5 && hole.attribute === '曜日') {
+                                        attributeText = '金·曜日';
+                                    } else {
+                                        attributeText = '金·' + hole.attribute;
+                                    }
+                                }
+                                
+                                return `<div class="scheme-hole ${hole.quality}">
+                                    <div class="scheme-hole-number">${hole.id}</div>
+                                    <div class="scheme-hole-quality">${qualityText}</div>
+                                    <div class="scheme-hole-attribute" title="${attributeText}">${attributeText}</div>
+                                </div>`;
+                            }
+                        }).join('')}
+                    </div>
+                    <div class="scheme-actions">
+                        <button class="scheme-btn scheme-btn-apply" onclick="applyScheme(${scheme.id})">应用方案</button>
+                        <button class="scheme-btn scheme-btn-delete" onclick="deleteScheme(${scheme.id})">删除</button>
+                    </div>
+                `;
+                
+                schemeList.appendChild(schemeItem);
+            });
+        }
+
+        // 更新下一个要激活的孔位
+        function updateNextHoleToActivate() {
+            // 找到第一个未激活的孔
+            for (let i = 0; i < weaponState.holes.length; i++) {
+                if (!weaponState.holes[i].active) {
+                    weaponState.nextHoleToActivate = i + 1;
+                    return;
+                }
+            }
+            // 如果所有孔都已激活
+            weaponState.nextHoleToActivate = 6;
+        }
+
+        // 获取随机属性
+        function getRandomAttribute(holeNumber, quality) {
+            let attributeList = [];
+            let prefix = '';
+            
+            if (quality === 'blue') prefix = '蓝·';
+            else if (quality === 'purple') prefix = '紫·';
+            else if (quality === 'gold') {
+                // 第5孔金色特殊处理
+                if (holeNumber === 5) {
+                    prefix = '金·';
+                } else {
+                    prefix = '金·';
+                }
+            }
+            
+            if (holeNumber === 1) {
+                attributeList = attributes.hole1[quality] || [];
+            } else if (holeNumber >= 2 && holeNumber <= 4) {
+                attributeList = attributes.hole234[quality] || [];
+            } else if (holeNumber === 5) {
+                attributeList = attributes.hole5[quality] || [];
+            }
+            
+            if (attributeList.length === 0) {
+                return { name: '', display: '' };
+            }
+            
+            const randomIndex = Math.floor(Math.random() * attributeList.length);
+            const attributeName = attributeList[randomIndex];
+            
+            // 特殊处理第5孔的金·曜日
+            if (holeNumber === 5 && quality === 'gold') {
+                return { name: attributeName, display: '金·' + attributeName };
+            }
+            
+            return { name: attributeName, display: prefix + attributeName };
+        }
+
+        // 更新锁定控制状态
+        function updateLockControls() {
+            let lockedActiveCount = 0;
+            for (let i = 0; i < 4; i++) { // 只检查前4孔
+                if (weaponState.holes[i].active && weaponState.holes[i].locked) {
+                    lockedActiveCount++;
+                }
+            }
+            
+            updateReforgeButtonText(lockedActiveCount);
+            
+            // 更新前4孔的锁定状态
+            if (lockedActiveCount === 3) {
+                for (let i = 0; i < 4; i++) {
+                    const checkbox = document.getElementById(`lock-${i+1}`);
+                    if (checkbox) {
+                        if (weaponState.holes[i].active && !weaponState.holes[i].locked) {
+                            checkbox.disabled = true;
+                            checkbox.classList.add('disabled-by-lock3');
+                        } else {
+                            if (!checkbox.disabled && weaponState.holes[i].active) {
+                                checkbox.disabled = false;
+                                checkbox.classList.remove('disabled-by-lock3');
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (let i = 0; i < 4; i++) {
+                    const checkbox = document.getElementById(`lock-${i+1}`);
+                    if (checkbox) {
+                        if (weaponState.holes[i].active) {
+                            checkbox.disabled = false;
+                            checkbox.classList.remove('disabled-by-lock3');
+                        } else {
+                            checkbox.disabled = true;
+                            checkbox.classList.remove('disabled-by-lock3');
+                        }
+                    }
+                }
+            }
+            
+            updateHoleDisplays();
+        }
+
+        // 更新重铸按钮文案
+        function updateReforgeButtonText(lockedCount) {
+            let costText = "";
+            if (lockedCount === 0) {
+                costText = "(基础16.7元)";
+            } else if (lockedCount === 1) {
+                costText = "(基础33.4元)";
+            } else if (lockedCount === 2) {
+                costText = "(基础83.5元)";
+            } else if (lockedCount >= 3) {
+                costText = "(基础167.0元)";
+            }
+            
+            document.getElementById('reforge-cost-text').textContent = costText;
+        }
+
+        // 重铸操作
+        function reforgeAction() {
+            console.log("重铸按钮被点击");
+            
+            let lockedCount = 0;
+            for (let i = 0; i < 4; i++) {
+                if (weaponState.holes[i].locked && weaponState.holes[i].active) {
+                    lockedCount++;
+                }
+            }
+            
+            let cost = 16.7;
+            if (lockedCount === 1) cost = 33.4;
+            else if (lockedCount === 2) cost = 83.5;
+            else if (lockedCount >= 3) cost = 167.0;
+            
+            weaponState.totalCost += cost;
+            weaponState.reforgeCount++;
+            
+            // 记录重铸前的金色状态，用于检测新出现的金色
+            const beforeGoldStatus = [];
+            for (let i = 0; i < 4; i++) {
+                beforeGoldStatus.push(weaponState.holes[i].quality === 'gold');
+            }
+            
+            const qualityChanges = reforgeActiveHoles();
+            const activationResult = tryActivateNextHole();
+            
+            recordReforgeHistory(cost, lockedCount, qualityChanges, activationResult);
+            
+            // 检查是否有新出现的金色孔
+            currentGoldHoles = [];
+            for (let i = 0; i < 4; i++) {
+                const isGoldNow = weaponState.holes[i].quality === 'gold';
+                if (isGoldNow && !beforeGoldStatus[i]) {
+                    currentGoldHoles.push(i + 1);
+                }
+            }
+            
+            // 如果有新出现的金色孔，显示确认对话框
+            if (currentGoldHoles.length > 0) {
+                showGoldConfirmModal(currentGoldHoles.join('、'));
+                addHistory(`孔位${currentGoldHoles.join('、')}出现金色品质！可选择保存方案。`, 'gold');
+            }
+            
+            updateHoleDisplays();
+            updateProgressBars();
+            updateGuaranteeCounters();
+            updateTotalCostDisplay();
+            updateValueAndProfit(); // 更新价值和盈亏
+            updateLockControls();
+            saveState();
+        }
+
+        // 重铸已激活且未锁定的孔
+        function reforgeActiveHoles() {
+            const qualityChanges = [];
+            
+            // 先检查金色待重置的孔并重置它们
+            const holesToReset = [...weaponState.goldPendingReset];
+            for (let i = 0; i < holesToReset.length; i++) {
+                const holeIndex = holesToReset[i];
+                if (holeIndex < 4 && // 只处理前4孔
+                    weaponState.holes[holeIndex].active && 
+                    !weaponState.holes[holeIndex].locked) {
+                    
+                    // 重置为蓝色，并随机一个蓝色属性
+                    weaponState.holes[holeIndex].quality = 'blue';
+                    const attribute = getRandomAttribute(holeIndex + 1, 'blue');
+                    weaponState.holes[holeIndex].attribute = attribute.name;
+                    
+                    // 从待重置列表中移除
+                    weaponState.goldPendingReset = weaponState.goldPendingReset.filter(index => index !== holeIndex);
+                    
+                    qualityChanges.push({ hole: holeIndex + 1, change: "金色重置为蓝色" });
+                }
+            }
+            
+            // 重铸每个已激活且未锁定的前4孔
+            for (let i = 0; i < 4; i++) {
+                if (weaponState.holes[i].active && !weaponState.holes[i].locked) {
+                    if (weaponState.goldPendingReset.includes(i)) {
+                        // 这个孔已经处于金色待重置状态，跳过重铸
+                        continue;
+                    }
+                    
+                    weaponState.holes[i].guaranteeCounter++;
+                    
+                    let isGold = false;
+                    let newQuality = weaponState.holes[i].quality;
+                    let newAttribute = weaponState.holes[i].attribute;
+                    
+                    if (weaponState.holes[i].guaranteeCounter >= 90) {
+                        // 触发保底，必定金色
+                        isGold = true;
+                    } else {
+                        // 使用动态金色概率
+                        const goldProbability = getGoldProbability(weaponState.holes[i].guaranteeCounter) * 100;
+                        const purpleProbability = 15; // 紫色固定15%
+                        const blueProbability = 100 - goldProbability - purpleProbability; // 蓝色为剩余部分
+                        
+                        const rand = Math.random() * 100;
+                        if (rand < blueProbability) {
+                            newQuality = 'blue';
+                            const attribute = getRandomAttribute(i + 1, 'blue');
+                            newAttribute = attribute.name;
+                            qualityChanges.push({ hole: i + 1, change: `蓝色(${attribute.display})` });
+                        } else if (rand < blueProbability + purpleProbability) {
+                            newQuality = 'purple';
+                            const attribute = getRandomAttribute(i + 1, 'purple');
+                            newAttribute = attribute.name;
+                            qualityChanges.push({ hole: i + 1, change: `紫色(${attribute.display})` });
+                        } else {
+                            isGold = true;
+                        }
+                    }
+                    
+                    if (isGold) {
+                        newQuality = 'gold';
+                        const attribute = getRandomAttribute(i + 1, 'gold');
+                        newAttribute = attribute.name;
+                        weaponState.holes[i].guaranteeCounter = 0; // 重置保底计数器
+                        if (!weaponState.goldPendingReset.includes(i)) {
+                            weaponState.goldPendingReset.push(i);
+                        }
+                        qualityChanges.push({ hole: i + 1, change: `金色(${attribute.display})` });
+                    }
+                    
+                    // 更新孔位的品质和属性
+                    weaponState.holes[i].quality = newQuality;
+                    weaponState.holes[i].attribute = newAttribute;
+                }
+            }
+            
+            return qualityChanges;
+        }
+
+        // 尝试激活下一个孔
+        function tryActivateNextHole() {
+            if (weaponState.nextHoleToActivate > 5) {
+                return { activated: false, message: "所有孔都已激活" };
+            }
+            
+            const holeIndex = weaponState.nextHoleToActivate - 1;
+            const holeNumber = weaponState.nextHoleToActivate;
+            const currentProgress = weaponState.holes[holeIndex].progress;
+            
+            // 增加激活尝试次数
+            weaponState.holes[holeIndex].activationAttempts++;
+            
+            let isDirectActivate = false;
+            // 移除30%进度限制，直接检查激活概率
+            // 使用动态激活概率
+            const activationProbability = getActivationProbability(weaponState.holes[holeIndex].activationAttempts);
+            const directActivate = Math.random() < activationProbability;
+            
+            if (directActivate) {
+                isDirectActivate = true;
+                weaponState.holes[holeIndex].active = true;
+                weaponState.holes[holeIndex].progress = 100;
+                
+                if (holeNumber === 5) {
+                    // 第5孔直接激活时，直接设置为金色曜日
+                    weaponState.holes[holeIndex].quality = 'gold';
+                    weaponState.holes[holeIndex].attribute = '曜日';
+                    weaponState.holes[holeIndex].locked = true; // 第5孔激活后自动锁定
+                    weaponState.nextHoleToActivate++;
+                    updateLockControls(); // 更新锁定控制
+                    
+                    return { activated: true, hole: holeNumber, direct: true, message: "直接激活，变为金色(金·曜日)" };
+                } else {
+                    // 第2-4孔直接激活时，先设为蓝色，然后立即重铸
+                    weaponState.holes[holeIndex].quality = 'blue';
+                    const attribute = getRandomAttribute(holeNumber, 'blue');
+                    weaponState.holes[holeIndex].attribute = attribute.name;
+                    weaponState.nextHoleToActivate++;
+                    updateLockControls(); // 更新锁定控制
+                    
+                    // 直接激活后立即进行一次重铸
+                    const resetResult = immediateResetAfterActivation(holeIndex);
+                    if (resetResult) {
+                        return { 
+                            activated: true, 
+                            hole: holeNumber, 
+                            direct: true, 
+                            message: `直接激活，重铸后变为${resetResult}` 
+                        };
+                    } else {
+                        return { 
+                            activated: true, 
+                            hole: holeNumber, 
+                            direct: true, 
+                            message: "直接激活" 
+                        };
+                    }
+                }
+            }
+            
+            // 修改这里：使用更精确的进度计算
+            const progressIncrement = (100/30).toFixed(2); // 3.33
+            let newProgress = (currentProgress + parseFloat(progressIncrement)).toFixed(2);
+            
+            // 确保当接近100%时，直接设置为100%，避免浮点数精度问题
+            if (newProgress > 99.9) {
+                newProgress = 100;
+            }
+            
+            weaponState.holes[holeIndex].progress = Math.min(newProgress, 100);
+            
+            // 修改这里：使用更宽松的激活条件
+            if (weaponState.holes[holeIndex].progress >= 99.9) {
+                weaponState.holes[holeIndex].active = true;
+                weaponState.holes[holeIndex].progress = 100;
+                
+                if (holeNumber === 5) {
+                    weaponState.holes[holeIndex].quality = 'gold';
+                    weaponState.holes[holeIndex].attribute = '曜日';
+                    weaponState.holes[holeIndex].locked = true; // 第5孔激活后自动锁定
+                    weaponState.nextHoleToActivate++;
+                    updateLockControls(); // 更新锁定控制
+                    
+                    return { activated: true, hole: holeNumber, direct: false, message: "进度满激活，变为金色(金·曜日)" };
+                } else {
+                    weaponState.holes[holeIndex].quality = 'blue';
+                    const attribute = getRandomAttribute(holeNumber, 'blue');
+                    weaponState.holes[holeIndex].attribute = attribute.name;
+                    weaponState.nextHoleToActivate++;
+                    updateLockControls(); // 更新锁定控制
+                    
+                    const resetResult = immediateResetAfterActivation(holeIndex);
+                    if (resetResult) {
+                        return { 
+                            activated: true, 
+                            hole: holeNumber, 
+                            direct: false, 
+                            message: `进度满激活，重铸后变为${resetResult}` 
+                        };
+                    } else {
+                        return { 
+                            activated: true, 
+                            hole: holeNumber, 
+                            direct: false, 
+                            message: "进度满激活" 
+                        };
+                    }
+                }
+            } else {
+                return { activated: false, hole: holeNumber, progress: weaponState.holes[holeIndex].progress };
+            }
+        }
+        
+        // 激活后立即进行一次重铸（只适用于第2-4孔）
+        function immediateResetAfterActivation(holeIndex) {
+            const holeNumber = holeIndex + 1;
+            
+            // 第5孔不应该调用这个函数
+            if (holeNumber === 5) {
+                return "";
+            }
+            
+            // 新激活的孔不增加保底计数器（因为它刚刚被激活，还没开始计数）
+            // 注意：这里需要先设置初始值
+            weaponState.holes[holeIndex].guaranteeCounter = 0;
+            
+            // 激活后立即重铸的逻辑
+            let isGold = false;
+            let resultQuality = "";
+            let attributeDisplay = "";
+            
+            // 随机决定品质：蓝色82%，紫色15%，金色3%
+            const goldProb = getGoldProbability(weaponState.holes[holeIndex].guaranteeCounter) * 100;
+            const purpleProb = 15;
+            const blueProb = 100 - goldProb - purpleProb;
+            const rand = Math.random() * 100;
+            if (rand < blueProb) {
+                weaponState.holes[holeIndex].quality = 'blue';
+                const attribute = getRandomAttribute(holeNumber, 'blue');
+                weaponState.holes[holeIndex].attribute = attribute.name;
+                resultQuality = "蓝色";
+                attributeDisplay = attribute.display;
+            } else if (rand < blueProb + purpleProb) {
+                weaponState.holes[holeIndex].quality = 'purple';
+                const attribute = getRandomAttribute(holeNumber, 'purple');
+                weaponState.holes[holeIndex].attribute = attribute.name;
+                resultQuality = "紫色";
+                attributeDisplay = attribute.display;
+            } else {
+                isGold = true;
+            }
+            
+            if (isGold) {
+                weaponState.holes[holeIndex].quality = 'gold';
+                const attribute = getRandomAttribute(holeNumber, 'gold');
+                weaponState.holes[holeIndex].attribute = attribute.name;
+                // 新激活的孔出现金色，也需要加入待重置列表
+                if (!weaponState.goldPendingReset.includes(holeIndex)) {
+                    weaponState.goldPendingReset.push(holeIndex);
+                }
+                resultQuality = "金色";
+                attributeDisplay = attribute.display;
+            }
+            
+            return attributeDisplay ? `${resultQuality}(${attributeDisplay})` : resultQuality;
+        }
+
+        // 记录重铸历史
+        function recordReforgeHistory(cost, lockedCount, qualityChanges, activationResult) {
+            let historyText = `重铸花费${cost.toFixed(1)}元（锁定${lockedCount}个孔），当前总花费${weaponState.totalCost.toFixed(1)}元`;
+            
+            if (qualityChanges.length > 0) {
+                const changes = qualityChanges.map(c => `孔${c.hole}变为${c.change}`).join('，');
+                historyText += `，${changes}`;
+            }
+            
+            if (activationResult.activated) {
+                historyText += `，孔${activationResult.hole}${activationResult.message}`;
+                
+                if (activationResult.hole === 4) {
+                    addHistory('下一个将激活孔位5（必定金色，属性：金·曜日）', 'info');
+                }
+                
+                if (activationResult.hole === 5) {
+                    addHistory('所有孔位已激活完成！', 'info');
+                }
+            } else if (activationResult.hole) {
+                historyText += `，孔${activationResult.hole}进度${Math.round(activationResult.progress)}%`;
+            }
+            
+            addHistory(historyText, 'info');
+        }
+
+        // 重置所有孔位
+        function resetAll() {
+            if (!confirm('确定要重置所有孔位吗？这将清空所有进度、花费记录和保存的方案。')) {
+                return;
+            }
+            
+            weaponState.holes = [
+                { id: 1, active: true, quality: 'blue', attribute: '套装1', locked: false, progress: 100, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 2, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 3, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 4, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 },
+                { id: 5, active: false, quality: 'blue', attribute: '', locked: false, progress: 0, guaranteeCounter: 0, activationAttempts: 0 }
+            ];
+            
+            weaponState.totalCost = 0;
+            weaponState.reforgeCount = 0;
+            weaponState.nextHoleToActivate = 2;
+            weaponState.goldPendingReset = [];
+            weaponState.history = [];
+            weaponState.schemes = []; // 清空方案
+            
+            for (let i = 1; i <= 4; i++) {
+                const checkbox = document.getElementById(`lock-${i}`);
+                checkbox.checked = false;
+                checkbox.disabled = true;
+                checkbox.classList.remove('disabled-by-lock3');
+                
+                if (i === 1) {
+                    checkbox.disabled = false;
+                }
+            }
+            
+            updateReforgeButtonText(0);
+            addHistory('所有孔位已重置为初始状态，方案已清空', 'info');
+            
+            updateHoleDisplays();
+            updateProgressBars();
+            updateGuaranteeCounters();
+            updateTotalCostDisplay();
+            updateValueAndProfit(); // 更新价值和盈亏
+            updateSchemeList();
+            saveState();
+        }
+
+        // 保存历史记录为TXT文件
+        function saveHistoryToFile() {
+            if (weaponState.history.length === 0) {
+                alert('没有操作记录可以保存！');
+                return;
+            }
+            
+            let fileContent = "藏音武器计算器操作记录\n";
+            fileContent += "========================\n";
+            fileContent += `生成时间: ${new Date().toLocaleString()}\n`;
+            fileContent += `总花费: ${weaponState.totalCost.toFixed(1)}元\n`;
+            fileContent += `重铸次数: ${weaponState.reforgeCount}次\n`;
+            fileContent += `保存的方案数: ${weaponState.schemes.length}个\n\n`;
+            fileContent += "当前孔位状态:\n";
+            
+            for (let i = 0; i < weaponState.holes.length; i++) {
+                const hole = weaponState.holes[i];
+                const qualityText = hole.quality === 'blue' ? '蓝色' : 
+                    hole.quality === 'purple' ? '紫色' : '金色';
+                
+                let attributeText = '';
+                if (hole.active) {
+                    if (hole.id === 5 && hole.quality === 'gold') {
+                        attributeText = '金·曜日';
+                    } else {
+                        const prefix = hole.quality === 'blue' ? '蓝·' : 
+                            hole.quality === 'purple' ? '紫·' : '金·';
+                        attributeText = prefix + hole.attribute;
+                    }
+                }
+                
+                fileContent += `孔位${hole.id}: ${hole.active ? '已激活' : '未激活'}，品质: ${qualityText}，属性: ${attributeText}，进度: ${Math.round(hole.progress)}%，锁定: ${hole.locked ? '是' : '否'}，金色保底计数: ${hole.guaranteeCounter}/90\n`;
+            }
+            
+            // 添加方案信息
+            if (weaponState.schemes.length > 0) {
+                fileContent += "\n保存的方案:\n";
+                fileContent += "==========\n";
+                weaponState.schemes.forEach((scheme, index) => {
+                    fileContent += `方案${index + 1} (${scheme.timestamp}):\n`;
+                    scheme.holes.forEach(hole => {
+                        const qualityText = hole.quality === 'blue' ? '蓝色' : 
+                            hole.quality === 'purple' ? '紫色' : '金色';
+                        let attributeText = '';
+                        if (hole.active) {
+                            if (hole.id === 5 && hole.quality === 'gold') {
+                                attributeText = '金·曜日';
+                            } else {
+                                const prefix = hole.quality === 'blue' ? '蓝·' : 
+                                    hole.quality === 'purple' ? '紫·' : '金·';
+                                attributeText = prefix + hole.attribute;
+                            }
+                        }
+                        fileContent += `  孔位${hole.id}: ${hole.active ? '已激活' : '未激活'}，品质: ${qualityText}，属性: ${attributeText}，进度: ${Math.round(hole.progress)}%\n`;
+                    });
+                    fileContent += "\n";
+                });
+            }
+            
+            fileContent += "\n操作记录:\n";
+            fileContent += "========\n";
+            
+            const reversedHistory = [...weaponState.history].reverse();
+            for (let i = 0; i < reversedHistory.length; i++) {
+                fileContent += `${reversedHistory[i].text}\n`;
+            }
+            
+            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `藏音武器计算器记录_${new Date().toISOString().slice(0, 10)}.txt`;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            addHistory('操作记录已保存为TXT文件', 'info');
+        }
+
+        // 更新孔位显示
+        function updateHoleDisplays() {
+            for (let i = 0; i < weaponState.holes.length; i++) {
+                const hole = weaponState.holes[i];
+                const holeElement = document.getElementById(`hole-${hole.id}`);
+                const qualityLabel = holeElement.querySelector('.quality-label');
+                const attributeLabel = document.getElementById(`attribute-${hole.id}`);
+                const holeStatus = holeElement.querySelector('.hole-status');
+                const lockCheckbox = document.getElementById(`lock-${hole.id}`);
+                
+                holeElement.className = 'hole';
+                if (!hole.active) {
+                    holeElement.classList.add('inactive');
+                    qualityLabel.textContent = '未激活';
+                    qualityLabel.className = 'quality-label inactive-text';
+                    attributeLabel.textContent = '未激活';
+                    attributeLabel.className = 'attribute-label inactive-text';
+                    holeStatus.textContent = '未激活';
+                    
+                    if (lockCheckbox) {
+                        lockCheckbox.disabled = true;
+                    }
+                } else {
+                    holeElement.classList.add(hole.quality);
+                    
+                    // 设置品质标签
+                    if (hole.id === 5 && hole.active) {
+                        qualityLabel.textContent = '金色';
+                        qualityLabel.className = 'quality-label gold-text';
+                    } else {
+                        qualityLabel.textContent = 
+                            hole.quality === 'blue' ? '蓝色' : 
+                            hole.quality === 'purple' ? '紫色' : '金色';
+                        qualityLabel.className = `quality-label ${hole.quality}-text`;
+                    }
+                    
+                    // 设置属性标签
+                    if (hole.id === 5 && hole.active && hole.quality === 'gold') {
+                        attributeLabel.textContent = '金·曜日';
+                        attributeLabel.className = 'attribute-label gold-text';
+                    } else if (hole.active) {
+                        const prefix = hole.quality === 'blue' ? '蓝·' : 
+                            hole.quality === 'purple' ? '紫·' : '金·';
+                        attributeLabel.textContent = prefix + hole.attribute;
+                        attributeLabel.className = `attribute-label ${hole.quality}-text`;
+                    }
+                    
+                    holeStatus.textContent = '已激活';
+                }
+            }
+            
+            // 更新操作提示
+            let actionNote = "";
+            if (weaponState.nextHoleToActivate <= 5) {
+                const currentHole = weaponState.nextHoleToActivate;
+                const progress = weaponState.holes[currentHole-1].progress;
+                actionNote = `当前正在激活孔位${currentHole}，进度: ${Math.round(progress)}%`;
+                if (currentHole === 5) {
+                    actionNote += "（激活后必定金色，属性：金·曜日）";
+                }
+            } else {
+                actionNote = "所有孔位已激活，点击'重铸'按钮将重铸未锁定的孔";
+            }            
+
+            if (weaponState.goldPendingReset.length > 0) {
+                const goldHoles = weaponState.goldPendingReset.map(i => i+1).join('、');
+                actionNote += `<br><span class="gold-warning">注意：孔位${goldHoles}处于金色状态，下次重铸将重置</span>`;
+            }
+            
+            document.getElementById('action-note').innerHTML = actionNote;
+        }
+
+        // 更新进度条
+        function updateProgressBars() {
+            for (let i = 0; i < weaponState.holes.length; i++) {
+                const hole = weaponState.holes[i];
+                const progressBar = document.getElementById(`progress-bar-${hole.id}`);
+                const progressText = document.getElementById(`progress-text-${hole.id}`);
+                
+                if (progressBar) {
+                    progressBar.style.width = `${hole.progress}%`;
+                    
+                    if (hole.active) {
+                        if (hole.id === 5 && hole.quality === 'gold') {
+                            progressText.textContent = "已激活(金色)";
+                        } else {
+                            progressText.textContent = "已激活";
+                        }
+                    } else {
+                        progressText.textContent = `进度: ${hole.progress.toFixed(1)}%`;
+                    }
+                }
+            }
+        }
+
+        // 更新保底计数器显示
+        function updateGuaranteeCounters() {
+            for (let i = 0; i < weaponState.holes.length; i++) {
+                const hole = weaponState.holes[i];
+                const guaranteeCounter = document.getElementById(`guarantee-counter-${hole.id}`);
+                
+                if (guaranteeCounter) {
+                    if (hole.id === 5) {
+                        if (hole.active) {
+                            guaranteeCounter.textContent = "已激活(金色)";
+                        } else {
+                            guaranteeCounter.textContent = "激活后必定金色";
+                        }
+                    } else {
+                        guaranteeCounter.textContent = `金色保底: ${hole.guaranteeCounter}/90`;
+                    }
+                }
+            }
+        }
+
+        // 更新总花费显示
+        function updateTotalCostDisplay() {
+            document.getElementById('total-cost-value').textContent = weaponState.totalCost.toFixed(1) + ' 元';
+            document.getElementById('cost-breakdown').textContent = 
+                `重铸次数: ${weaponState.reforgeCount}次`;
+        }
+
+        // 添加历史记录
+        function addHistory(text, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const historyItem = {
+                text: `[${timestamp}] ${text}`,
+                type: type
+            };
+            
+            weaponState.history.unshift(historyItem);
+            
+            if (weaponState.history.length > 100) {
+                weaponState.history.pop();
+            }
+            
+            updateHistoryDisplay();
+        }
+
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            
+            if (weaponState.history.length === 0) {
+                historyList.innerHTML = '<div class="history-item info-event">暂无操作记录</div>';
+                return;
+            }
+            
+            weaponState.history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `history-item ${item.type}-event`;
+                div.textContent = item.text;
+                historyList.appendChild(div);
+            });
+        }
+
+        // 清空历史记录
+        function clearHistory() {
+            if (weaponState.history.length === 0) return;
+            
+            if (confirm('确定要清空所有操作记录吗？')) {
+                weaponState.history = [];
+                updateHistoryDisplay();
+                saveState();
+            }
+        }
+
+        // 保存状态到本地存储
+        function saveState() {
+            try {
+                localStorage.setItem('weaponState', JSON.stringify(weaponState));
+            } catch (e) {
+                console.error('保存状态失败:', e);
+            }
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
