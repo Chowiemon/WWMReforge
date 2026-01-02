@@ -1283,7 +1283,7 @@
                 
                 <div class="btn-group">
                     <button class="btn btn-primary" id="reforge-btn">
-                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础3.67USD)</span>
+                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础2.78USD)</span>
                     </button>
                     <button class="btn btn-warning" id="custom-btn">
                         <i class="fas fa-cogs"></i> 自定义设置
@@ -1330,10 +1330,10 @@
                     <div class="cost-details">
                         <div><strong>重铸费用:</strong></div>
                         <div></div>
-                        <div>不锁孔: 3.67USD/次</div>
-                        <div>锁1孔: 7.33USD/次</div>
-                        <div>锁2孔: 18.33USD/次</div>
-                        <div>锁3孔: 36.67USD/次</div>
+                        <div>不锁孔: 2.78USD/次</div>
+                        <div>锁1孔: 5.56USD/次</div>
+                        <div>锁2孔: 13.89USD/次</div>
+                        <div>锁3孔: 27.78USD/次</div>
                     </div>
                 </div>
             </div>
@@ -2525,13 +2525,13 @@ function saveCurrentScheme() {
         function updateReforgeButtonText(lockedCount) {
             let costText = "";
             if (lockedCount === 0) {
-                costText = "(基础3.67USD)";
+                costText = "(基础2.78USD)";
             } else if (lockedCount === 1) {
                 costText = "(基础7.3USD)";
             } else if (lockedCount === 2) {
                 costText = "(基础18.3USD)";
             } else if (lockedCount >= 3) {
-                costText = "(基础36.67USD)";
+                costText = "(基础27.78USD)";
             }
             
             document.getElementById('reforge-cost-text').textContent = costText;
@@ -2548,10 +2548,10 @@ function saveCurrentScheme() {
                 }
             }
             
-            let cost = 3.67;
+            let cost = 2.78;
             if (lockedCount === 1) cost = 7.3;
             else if (lockedCount === 2) cost = 18.3;
-            else if (lockedCount >= 3) cost = 36.67;
+            else if (lockedCount >= 3) cost = 27.78;
             
             weaponState.totalCost += cost;
             weaponState.reforgeCount++;
