@@ -1283,7 +1283,7 @@
                 
                 <div class="btn-group">
                     <button class="btn btn-primary" id="reforge-btn">
-                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础16.7元)</span>
+                        <i class="fas fa-sync-alt"></i> 重铸 <span id="reforge-cost-text">(基础16.7USD)</span>
                     </button>
                     <button class="btn btn-warning" id="custom-btn">
                         <i class="fas fa-cogs"></i> 自定义设置
@@ -1314,15 +1314,15 @@
                     <div class="cost-summary">
                         <div class="cost-item">
                             <div class="cost-item-title">总花费</div>
-                            <div class="cost-item-value total-cost-value" id="total-cost-value">0 元</div>
+                            <div class="cost-item-value total-cost-value" id="total-cost-value">0 USD</div>
                         </div>
                         <div class="cost-item">
                             <div class="cost-item-title">价值</div>
-                            <div class="cost-item-value value-cost-value" id="value-cost-value">0 元</div>
+                            <div class="cost-item-value value-cost-value" id="value-cost-value">0 USD</div>
                         </div>
                         <div class="cost-item">
                             <div class="cost-item-title">盈亏</div>
-                            <div class="cost-item-value profit-cost-value" id="profit-cost-value">0 元</div>
+                            <div class="cost-item-value profit-cost-value" id="profit-cost-value">0 USD</div>
                         </div>
                     </div>
                     
@@ -1330,10 +1330,10 @@
                     <div class="cost-details">
                         <div><strong>重铸费用:</strong></div>
                         <div></div>
-                        <div>不锁孔: 16.7元/次</div>
-                        <div>锁1孔: 33.4元/次</div>
-                        <div>锁2孔: 83.5元/次</div>
-                        <div>锁3孔: 167.0元/次</div>
+                        <div>不锁孔: 3.67USD/次</div>
+                        <div>锁1孔: 7.33USD/次</div>
+                        <div>锁2孔: 18.33USD/次</div>
+                        <div>锁3孔: 36.67USD/次</div>
                     </div>
                 </div>
             </div>
@@ -2039,10 +2039,10 @@ function updateAttributeOptions(holeId, quality) {
             const value = calculateWeaponValue();
             const profit = value - weaponState.totalCost;
             
-            document.getElementById('value-cost-value').textContent = value.toFixed(1) + ' 元';
+            document.getElementById('value-cost-value').textContent = value.toFixed(1) + ' USD';
             
             const profitElement = document.getElementById('profit-cost-value');
-            profitElement.textContent = profit.toFixed(1) + ' 元';
+            profitElement.textContent = profit.toFixed(1) + ' USD';
             
             if (profit < 0) {
                 profitElement.classList.add('profit-negative');
@@ -2525,13 +2525,13 @@ function saveCurrentScheme() {
         function updateReforgeButtonText(lockedCount) {
             let costText = "";
             if (lockedCount === 0) {
-                costText = "(基础16.7元)";
+                costText = "(基础16.7USD)";
             } else if (lockedCount === 1) {
-                costText = "(基础33.4元)";
+                costText = "(基础33.4USD)";
             } else if (lockedCount === 2) {
-                costText = "(基础83.5元)";
+                costText = "(基础83.5USD)";
             } else if (lockedCount >= 3) {
-                costText = "(基础167.0元)";
+                costText = "(基础167.0USD)";
             }
             
             document.getElementById('reforge-cost-text').textContent = costText;
@@ -2844,7 +2844,7 @@ function saveCurrentScheme() {
 
         // 记录重铸历史
         function recordReforgeHistory(cost, lockedCount, qualityChanges, activationResult) {
-            let historyText = `重铸花费${cost.toFixed(1)}元（锁定${lockedCount}个孔），当前总花费${weaponState.totalCost.toFixed(1)}元`;
+            let historyText = `重铸花费${cost.toFixed(1)}USD（锁定${lockedCount}个孔），当前总花费${weaponState.totalCost.toFixed(1)}USD`;
             
             if (qualityChanges.length > 0) {
                 const changes = qualityChanges.map(c => `孔${c.hole}变为${c.change}`).join('，');
@@ -2922,7 +2922,7 @@ function saveCurrentScheme() {
             let fileContent = "藏音武器计算器操作记录\n";
             fileContent += "========================\n";
             fileContent += `生成时间: ${new Date().toLocaleString()}\n`;
-            fileContent += `总花费: ${weaponState.totalCost.toFixed(1)}元\n`;
+            fileContent += `总花费: ${weaponState.totalCost.toFixed(1)}USD\n`;
             fileContent += `重铸次数: ${weaponState.reforgeCount}次\n`;
             fileContent += `保存的方案数: ${weaponState.schemes.length}个\n\n`;
             fileContent += "当前孔位状态:\n";
@@ -3108,7 +3108,7 @@ function saveCurrentScheme() {
 
         // 更新总花费显示
         function updateTotalCostDisplay() {
-            document.getElementById('total-cost-value').textContent = weaponState.totalCost.toFixed(1) + ' 元';
+            document.getElementById('total-cost-value').textContent = weaponState.totalCost.toFixed(1) + ' USD';
             document.getElementById('cost-breakdown').textContent = 
                 `重铸次数: ${weaponState.reforgeCount}次`;
         }
